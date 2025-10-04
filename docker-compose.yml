@@ -1,0 +1,19 @@
+name: delivery_company_ana
+
+services:
+  postgres_db:
+    image: postgres:16
+    container_name: courier_postgres_db
+
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: courier_service_db
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+    restart: unless-stopped
