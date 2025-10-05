@@ -26,6 +26,7 @@ repositories {
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("jakarta.persistence:jakarta.persistence-api")
   compileOnly("org.projectlombok:lombok")
   runtimeOnly("org.postgresql:postgresql")
   annotationProcessor("org.projectlombok:lombok")
@@ -36,4 +37,3 @@ dependencies {
 tasks.withType<Test> {
   useJUnitPlatform()
 }
-
