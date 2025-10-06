@@ -1,6 +1,8 @@
 package com.anateam.entity;
 
 public enum UserRole {
-
+    CUSTOMER,
+    COURIER,
+    ADMIN
 }
 
