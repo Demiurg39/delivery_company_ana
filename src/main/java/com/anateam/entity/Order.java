@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -28,7 +30,7 @@ public class Order {
     private Courier courier;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "OrderStatus")
+    @Column(name = "status", nullable = false)
     private OrderStatus status;
 
     @Column(name = "pickup_address", nullable = false)
@@ -52,7 +54,7 @@ public class Order {
     private GpsCoordinates deliveryCoordinates;
 
     @Column(name = "price")
-    private Double price;
+    private BigDecimal price;
 
     @Column(name = "estimated_minutes")
     private Integer estimatedMinutes;
