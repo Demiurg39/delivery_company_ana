@@ -1,4 +1,4 @@
-package com.anateam.services;
+package com.anateam.service;
 
 import com.anateam.dto.UserRegistrationDto;
 import com.anateam.entity.User;
