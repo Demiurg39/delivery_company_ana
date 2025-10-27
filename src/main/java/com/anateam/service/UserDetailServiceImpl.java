@@ -1,4 +1,4 @@
-package com.anateam.config;
+package com.anateam.service;
 
 import com.anateam.entity.User;
 import com.anateam.repository.UserRepository;

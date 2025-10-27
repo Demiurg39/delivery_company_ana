@@ -1,4 +1,4 @@
-package com.anateam.config;
+package com.anateam.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
