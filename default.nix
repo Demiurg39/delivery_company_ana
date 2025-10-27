@@ -1,7 +1,7 @@
 {pkgs ? import <nixpkgs> {}}:
 pkgs.mkShell {
   packages = with pkgs; [
-    jdk17
+    jdk21
     gradle
   ];
 }

@@ -8,11 +8,16 @@ group = "com.anateam"
 version = "0.0.1-SNAPSHOT"
 description = "Delivery company Spring Application"
 
-java {
-  toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
-  }
-}
+// INFO: cause:
+// > Could not resolve all dependencies for configuration ':compileClasspath'.
+// > Failed to calculate the value of task ':compileJava' property 'javaCompiler'.
+// > Cannot find a Java installation on your machine (Linux 6.17.1 amd64) matching: {languageVersion=17, vendor=any vendor, implementation=vendor-specific, nativeImageCapable=false}. Toolchain download repositories have not been configured.
+//
+// java {
+//   toolchain {
+//     languageVersion = JavaLanguageVersion.of(17)
+//   }
+// }
 
 configurations {
   compileOnly {
