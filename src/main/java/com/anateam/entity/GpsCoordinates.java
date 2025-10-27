@@ -19,5 +19,5 @@ public class GpsCoordinates {
     private BigDecimal latitude;
 
     @Column(nullable = false, precision = 11, scale = 8)
-    private BigDecimal logitude;
+    private BigDecimal longitude;
 }

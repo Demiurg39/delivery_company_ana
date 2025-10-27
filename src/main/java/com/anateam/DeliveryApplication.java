@@ -1,4 +1,4 @@
-package com.anateam.app;
+package com.anateam;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
