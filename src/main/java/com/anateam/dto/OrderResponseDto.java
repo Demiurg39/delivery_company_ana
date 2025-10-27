@@ -7,12 +7,11 @@ public record OrderResponseDto(
     Integer customerId,
     Integer courierId,
     String status,
-    String deliveryAddress,
     String pickupAddress,
-    BigDecimal pickupCoordinates,
-    BigDecimal deliveryCoordinates,
+    String deliveryAddress,
+    GpsCoordinatesDto pickupCoordinates,
+    GpsCoordinatesDto deliveryCoordinates,
     BigDecimal price,
     Integer estimatedMinutes,
     String createdAt
 ) {}
-

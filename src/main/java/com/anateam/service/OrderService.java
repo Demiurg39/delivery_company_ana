@@ -1,5 +1,8 @@
 package com.anateam.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.anateam.dto.OrderCreationDto;
 import com.anateam.dto.OrderResponseDto;
 import com.anateam.dto.OrderStatusUpdateDto;
@@ -7,14 +10,15 @@ import com.anateam.dto.UserResponseDto;
 
 public interface OrderService {
 
-    public OrderResponseDto createOrder(OrderCreationDto creationDto,
-                                        UserResponseDto userDto);
+    OrderResponseDto createOrder(OrderCreationDto creationDto, UserResponseDto userDto);
 
-    public OrderResponseDto findOrderById(Integer id);
+    OrderResponseDto acceptOrder(Integer orderId, Integer courierId);
 
-    public OrderResponseDto acceptOrder(Integer id, UserResponseDto userDto);
+    OrderResponseDto updateOrderStatus(Integer orderId, OrderStatusUpdateDto statusUpdateDto, UserResponseDto authenticatedCourier);
 
-    public OrderResponseDto updateOrder(Integer id,
-                                        OrderStatusUpdateDto statusUpdateDto,
-                                        UserResponseDto authenticatedCourier);
+    OrderResponseDto findOrderDtoById(Integer orderId);
+
+    Page<OrderResponseDto> findOrdersByCustomerId(Integer customerId, Pageable pageable);
+
+    Page<OrderResponseDto> findAvailableOrders(Pageable pageable);
 }

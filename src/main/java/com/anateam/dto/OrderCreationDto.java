@@ -1,9 +1,9 @@
 package com.anateam.dto;
 
 public record OrderCreationDto(
-    Integer customerId,
-    Integer courierId,
+    GpsCoordinatesDto pickupCoordinates,
+    GpsCoordinatesDto deliveryCoordinates,
+    String pickupAddress,
     String deliveryAddress,
-    String pickupAddress
+    String description
 ) {}
-
