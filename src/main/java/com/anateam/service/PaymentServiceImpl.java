@@ -2,9 +2,12 @@ package com.anateam.service;
 
 import com.anateam.dto.PaymentRequestDto;
 import com.anateam.dto.PaymentResponseDto;
+import com.anateam.entity.Order;
 import com.anateam.entity.Payment;
+import com.anateam.entity.PaymentMethod;
+import com.anateam.entity.PaymentStatus;
+import com.anateam.repository.OrderRepository;
 import com.anateam.repository.PaymentRepository;
-import com.anateam.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,26 +16,38 @@ import org.springframework.stereotype.Service;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
+
+    private PaymentResponseDto toPaymentResponseDto(Payment payment) {
+        return new PaymentResponseDto(
+            payment.getId(), payment.getOrder().getId(), payment.getAmount(),
+            payment.getStatus().toString(),
+            payment.getPaymentMethod().toString());
+    }
 
     @Override
-    public PaymentResponseDto createPayment(PaymentRequestDto requestDto, Integer customerId) {
+    public PaymentResponseDto createPayment(PaymentRequestDto requestDto,
+                                            Integer customerId) {
+        Order order =
+            orderRepository.findById(requestDto.orderId())
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
         Payment payment = new Payment();
-        payment.setCustomerId(customerId);
-        payment.setAmount(requestDto.getAmount());
-        payment.setMethod(requestDto.getMethod());
-        payment.setOrderId(requestDto.getOrderId());
-        payment.setStatus("pending");
+        payment.setOrder(order);
+        payment.setAmount(requestDto.amount());
+        payment.setPaymentMethod(
+            PaymentMethod.valueOf(requestDto.paymentMethod().toUpperCase()));
+        payment.setStatus(PaymentStatus.PENDING);
 
         paymentRepository.save(payment);
 
-        return new PaymentResponseDto(payment);
+        return toPaymentResponseDto(payment);
     }
     @Override
     public PaymentResponseDto getPaymentByOrderId(Integer orderId) {
-        Payment payment = paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+        Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(
+            () -> new RuntimeException("Payment not found"));
 
-        return new PaymentResponseDto(payment);
+        return toPaymentResponseDto(payment);
     }
-
 }
