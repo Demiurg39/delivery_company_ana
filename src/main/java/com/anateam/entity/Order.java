@@ -22,12 +22,12 @@ public class Order {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private User customer;
+    @JoinColumn(name = "customer", nullable = false)
+    private Integer customerId;
 
     @ManyToOne
     @JoinColumn(name = "courier_id")
-    private Courier courier;
+    private Integer courierId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -52,6 +52,9 @@ public class Order {
         @AttributeOverride(name = "longitude", column = @Column(name = "delivery_longitude"))
     })
     private GpsCoordinates deliveryCoordinates;
+
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "price")
     private BigDecimal price;
