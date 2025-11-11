@@ -11,12 +11,14 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JwtServiceImpl {
+@RequiredArgsConstructor
+public class JwtServiceImpl implements JwtService {
 
     @Value("${application.jwt.secret-key}") private String secretKey;
 
