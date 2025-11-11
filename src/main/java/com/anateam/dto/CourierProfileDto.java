@@ -5,6 +5,5 @@ public record CourierProfileDto(
     String fullName,
     String phoneNumber,
     String status,
-    String vehicleType,
-    String createdAt
+    String vehicleType
 ) {}
