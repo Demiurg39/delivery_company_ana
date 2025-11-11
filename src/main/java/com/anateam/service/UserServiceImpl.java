@@ -1,10 +1,9 @@
-package com.anateam.service.impl;
+package com.anateam.service;
 
 import com.anateam.dto.UserResponseDto;
 import com.anateam.dto.UserUpdateDto;
 import com.anateam.entity.User;
 import com.anateam.repository.UserRepository;
-import com.anateam.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,31 +15,41 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    private UserResponseDto toUserResponseDto(User user) {
+        return new UserResponseDto(
+            user.getId(), user.getFullName(), user.getPhoneNumber(),
+            user.getRole().toString(), user.getCreatedAt().toString());
+    }
+
     @Override
     public Page<UserResponseDto> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                .map(UserResponseDto::new);
+        return userRepository.findAll(pageable).map(this::toUserResponseDto);
     }
 
     @Override
     public UserResponseDto findById(Integer id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserResponseDto(user);
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new RuntimeException("User not found"));
+        return toUserResponseDto(user);
     }
 
     @Override
-    public UserResponseDto updateUserById(Integer id, UserUpdateDto userUpdateDto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public UserResponseDto updateUserById(Integer id,
+                                          UserUpdateDto userUpdateDto) {
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new RuntimeException("User not found"));
 
+        String name = userUpdateDto.fullName();
+        String phone = userUpdateDto.phoneNumber();
 
-        if (userUpdateDto.getName() != null) user.setName(userUpdateDto.getName());
-        if (userUpdateDto.getPhone() != null) user.setPhone(userUpdateDto.getPhone());
+        if (name != null)
+            user.setFullName(name);
+        if (phone != null)
+            user.setPhoneNumber(phone);
 
         userRepository.save(user);
 
-        return new UserResponseDto(user);
+        return toUserResponseDto(user);
     }
 
     @Override
