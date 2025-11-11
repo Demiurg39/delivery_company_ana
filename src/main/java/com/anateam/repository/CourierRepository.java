@@ -16,5 +16,5 @@ public interface CourierRepository extends JpaRepository<Courier, Integer> {
 
     List<Courier> findAllByStatusAndUserRole(CourierStatus status, UserRole role);
 
-    List<Courier> findAllByVehicle(VehincleType vehicleType);
+    List<Courier> findAllByVehicleType(VehincleType vehicleType);
 }
