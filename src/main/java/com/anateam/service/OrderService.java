@@ -15,4 +15,6 @@ public interface OrderService {
     OrderResponseDto updateOrderStatus(Integer orderId,
                                        OrderStatusUpdateDto statusUpdateDto,
                                        UserResponseDto authenticatedCourier);
+
+    OrderResponseDto findOrderDtoById(Integer orderId);
 }

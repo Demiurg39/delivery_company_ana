@@ -22,8 +22,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findAllByPickupAddressContainingOrDeliveryAddressContaining(String text, String textAgain);
 
-    OrderResponseDto findOrderDtoById(Integer orderId);
-
     Page<OrderResponseDto> findOrdersByCustomerId(Integer customerId, Pageable pageable);
 
     Page<OrderResponseDto> findOrdersByStatus(String status, Pageable pageable);

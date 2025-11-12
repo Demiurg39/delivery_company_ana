@@ -73,6 +73,12 @@ public class OrderServiceImpl implements OrderService {
         return toOrderResponseDto(order);
     }
 
+    public OrderResponseDto findOrderDtoById(Integer orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+            () -> new RuntimeException("Order not found"));
+        return toOrderResponseDto(order);
+    }
+
     private OrderResponseDto toOrderResponseDto(Order order) {
         return new OrderResponseDto(
             order.getId(), order.getCustomer().getId(),
@@ -85,6 +91,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private GpsCoordinatesDto toGpsCoordinatesDto(GpsCoordinates coords) {
-        return new GpsCoordinatesDto(coords.getLatitude(), coords.getLongitude());
+        return new GpsCoordinatesDto(coords.getLatitude(),
+                                     coords.getLongitude());
     }
 }
