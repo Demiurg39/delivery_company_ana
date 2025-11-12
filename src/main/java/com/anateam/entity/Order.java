@@ -53,6 +53,9 @@ public class Order {
     })
     private GpsCoordinates deliveryCoordinates;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "price")
     private BigDecimal price;
 
