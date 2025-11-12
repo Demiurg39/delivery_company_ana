@@ -35,7 +35,6 @@ public class OrderController {
     public ResponseEntity<OrderResponseDto>
     createOrder(@Valid @RequestBody OrderCreationDto creationDto,
                 @AuthenticationPrincipal UserDetails userDetails) {
-        // NOTE: get authenticated customer
         UserResponseDto authenticatedCustomer =
             getDtoFromUserDetails(userDetails);
         OrderResponseDto createdOrder =
@@ -46,32 +45,33 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDto>
     getOrderById(@PathVariable Integer id) {
-        OrderResponseDto orderDto = orderRepository.findOrderDtoById(id);
+        OrderResponseDto orderDto = orderService.findOrderDtoById(id);
         return ResponseEntity.ok(orderDto);
     }
 
     @PostMapping("/{id}/accept")
     public ResponseEntity<OrderResponseDto>
-    acceptOrder(@PathVariable Integer id) {
-        // TODO: get authenticated courier
-        // OrderResponseDto acceptedOrder = orderService.acceptOrder(id,
-        // authenticatedCourier);
-        return ResponseEntity.ok(/* acceptedOrder */ null);
+    acceptOrder(@PathVariable Integer id,
+                @AuthenticationPrincipal UserDetails userDetails) {
+        UserResponseDto authenticatedCourier =
+            getDtoFromUserDetails(userDetails);
+        OrderResponseDto acceptedOrder =
+            orderService.acceptOrder(id, authenticatedCourier.id());
+        return ResponseEntity.ok(acceptedOrder);
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<OrderResponseDto> updateOrderStatus(
-        @PathVariable Integer id,
-        @Valid @RequestBody OrderStatusUpdateDto statusUpdateDto) {
-        // TODO: get authenticated courier
-        // OrderResponseDto updatedOrder = orderService.updateOrder(id,
-        // statusUpdateDto, authenticatedCourier);
-        return ResponseEntity.ok(/* acceptedOrder */ null);
+    public ResponseEntity<OrderResponseDto>
+    updateOrderStatus(@PathVariable Integer id,
+                      @Valid @RequestBody OrderStatusUpdateDto statusUpdateDto,
+                      @AuthenticationPrincipal UserDetails userDetails) {
+        UserResponseDto authenticatedCourier =
+            getDtoFromUserDetails(userDetails);
+        OrderResponseDto updatedOrder = orderService.updateOrderStatus(
+            authenticatedCourier.id(), statusUpdateDto, authenticatedCourier);
+        return ResponseEntity.ok(updatedOrder);
     }
 
-    /**
-     * Находит нашего User (Entity) по номеру телефона из токена.
-     */
     private User getAppUserFromUserDetails(UserDetails userDetails) {
         String phoneNumber = userDetails.getUsername();
         return userRepository.findByPhoneNumber(phoneNumber)
@@ -81,9 +81,6 @@ public class OrderController {
                         "Аутентифицированный пользователь не найден в БД"));
     }
 
-    /**
-     * Конвертирует UserDetails в UserResponseDto (который ожидает сервис).
-     */
     private UserResponseDto getDtoFromUserDetails(UserDetails userDetails) {
         User user = getAppUserFromUserDetails(userDetails);
         // (Этот код конвертации у тебя уже есть в AuthServiceImpl)
