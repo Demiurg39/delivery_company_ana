@@ -85,7 +85,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private GpsCoordinatesDto toGpsCoordinatesDto(GpsCoordinates coords) {
-        return new GpsCoordinatesDto(coords.getLatitude(),
-                                     coords.getLongitude());
+        return new GpsCoordinatesDto(coords.getLatitude(), coords.getLongitude());
     }
 }
