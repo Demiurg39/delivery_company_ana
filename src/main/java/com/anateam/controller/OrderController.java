@@ -21,12 +21,20 @@ import com.anateam.repository.OrderRepository;
 import com.anateam.repository.UserRepository;
 import com.anateam.service.OrderService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/order")
 @RequiredArgsConstructor
+@Tag(name = "Order Management", description = "Operations for creating, tracking, and managing delivery orders")
+@SecurityRequirement(name = "bearerAuth") // Указывает, что эти методы требуют JWT
 public class OrderController {
 
     private final OrderService orderService;
@@ -34,31 +42,37 @@ public class OrderController {
     private final UserRepository userRepository;
 
     @PostMapping
-    public ResponseEntity<OrderResponseDto>
-    createOrder(@Valid @RequestBody OrderCreationDto creationDto,
-                @AuthenticationPrincipal UserDetails userDetails) {
-        UserResponseDto authenticatedCustomer =
-            getDtoFromUserDetails(userDetails);
-        OrderResponseDto createdOrder =
-            orderService.createOrder(creationDto, authenticatedCustomer);
+    @Operation(summary = "Create a new order", description = "Allows an authenticated customer to place a new delivery order.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Order created successfully"),
+        @ApiResponse(responseCode = "403", description = "Forbidden (if user is not authorized)")
+    })
+    public ResponseEntity<OrderResponseDto> createOrder(
+            @Valid @RequestBody OrderCreationDto creationDto,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails // Скрываем userDetails из Swagger
+    ) {
+        UserResponseDto authenticatedCustomer = getDtoFromUserDetails(userDetails);
+        OrderResponseDto createdOrder = orderService.createOrder(creationDto, authenticatedCustomer);
         return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Get order by ID", description = "Retrieves detailed information about a specific order.")
+    @ApiResponse(responseCode = "200", description = "Order found")
+    @ApiResponse(responseCode = "404", description = "Order not found")
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponseDto>
-    getOrderById(@PathVariable Integer id) {
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Integer id) {
         OrderResponseDto orderDto = orderService.findOrderDtoById(id);
         return ResponseEntity.ok(orderDto);
     }
 
     @PostMapping("/{id}/accept")
-    public ResponseEntity<OrderResponseDto>
-    acceptOrder(@PathVariable Integer id,
-                @AuthenticationPrincipal UserDetails userDetails) {
-        UserResponseDto authenticatedCourier =
-            getDtoFromUserDetails(userDetails);
-        OrderResponseDto acceptedOrder =
-            orderService.acceptOrder(id, authenticatedCourier.id());
+    @Operation(summary = "Accept an order", description = "Allows a courier to accept a pending order.")
+    public ResponseEntity<OrderResponseDto> acceptOrder(
+        @PathVariable Integer id,
+        @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UserResponseDto authenticatedCourier = getDtoFromUserDetails(userDetails);
+        OrderResponseDto acceptedOrder = orderService.acceptOrder(id, authenticatedCourier.id());
         return ResponseEntity.ok(acceptedOrder);
     }
 
@@ -85,7 +99,6 @@ public class OrderController {
 
     private UserResponseDto getDtoFromUserDetails(UserDetails userDetails) {
         User user = getAppUserFromUserDetails(userDetails);
-        // (Этот код конвертации у тебя уже есть в AuthServiceImpl)
         return new UserResponseDto(user.getId(), user.getFullName(),
                                    user.getPhoneNumber(), user.getRole().name(),
                                    user.getCreatedAt().toString());

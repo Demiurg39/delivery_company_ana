@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anateam.dto.PaymentResponseDto;
 import com.anateam.service.PaymentService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -23,12 +25,23 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
+    @Operation(summary = "Initiate a payment", description = "Process a payment for a specific order.")
+    @ApiResponse(responseCode = "200", description = "Payment processed successfully")
     public ResponseEntity<PaymentResponseDto>
     createPayment(@Valid @RequestBody PaymentController requestDto) {
         // TODO: Получить аутентифицированного клиента и проверить, что это его
         // заказ PaymentResponseDto paymentResponse =
         // paymentService.createPayment(requestDto, authenticatedCustomer);
         return new ResponseEntity<>(/* paymentResponse,*/ HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get payment status", description = "Check the status of a specific payment transaction.")
+    @ApiResponse(responseCode = "200", description = "Payment details found")
+    @ApiResponse(responseCode = "404", description = "Payment not found")
+    public ResponseEntity<PaymentResponseDto> getPaymentStatus(@PathVariable Integer id) {
+        // FIXME:
+        return ResponseEntity.ok(paymentService.getPaymentStatus(id));
     }
 
     @PutMapping
