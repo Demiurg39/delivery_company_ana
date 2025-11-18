@@ -1,7 +1,5 @@
 package com.anateam.config;
 
-import com.anateam.service.UserDetailServiceImpl;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.anateam.service.UserDetailServiceImpl;
+
+import jakarta.servlet.DispatcherType;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -45,31 +48,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-        throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // NOTE: disable csrf
             .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(authz -> authz
+                // 2. РАЗРЕШАЕМ ВНУТРЕННИЕ ЗАПРОСЫ (Ошибки и Форварды)
+                .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
 
-            // NOTE: autorization rules
-            .authorizeHttpRequests(
-                authz
-                -> authz
-                       // NOTE: white-list
-                       .requestMatchers(
-                           "/api/auth/**",     // NOTE: registration and login
-                           "/swagger-ui.html", // NOTE: Swagger ui
-                           "/swagger-ui/**",   // NOTE: Still swagger
-                           "/v3/api-docs/**"   // NOTE: OpenAPI
-                           )
-                       .permitAll()
-                       // NOTE: other requests must be authenticated
-                       .anyRequest()
-                       .authenticated())
+                // 3. ОБНОВЛЕННЫЙ БЕЛЫЙ СПИСОК (Swagger любит webjars)
+                .requestMatchers(
+                    "/",
+                    "/api/auth/**",
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**", 
+                    "/webjars/**"
+                ).permitAll()
 
-            .sessionManagement(session
-                               -> session.sessionCreationPolicy(
-                                   SessionCreationPolicy.STATELESS))
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
