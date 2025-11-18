@@ -1,10 +1,10 @@
 package com.anateam.service;
 
-import com.anateam.dto.CourierProfileDto;
-import com.anateam.dto.GpsCoordinatesDto;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.anateam.dto.CourierProfileDto;
+import com.anateam.dto.GpsCoordinatesDto;
 
 public interface CourierService {
 

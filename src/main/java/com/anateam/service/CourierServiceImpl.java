@@ -1,5 +1,9 @@
 package com.anateam.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.anateam.dto.CourierProfileDto;
 import com.anateam.dto.GpsCoordinatesDto;
 import com.anateam.entity.Courier;
@@ -7,10 +11,8 @@ import com.anateam.entity.CourierStatus;
 import com.anateam.entity.GpsCoordinates;
 import com.anateam.entity.User;
 import com.anateam.repository.CourierRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

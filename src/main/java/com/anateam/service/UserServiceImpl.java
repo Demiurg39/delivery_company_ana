@@ -1,13 +1,15 @@
 package com.anateam.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.anateam.dto.UserResponseDto;
 import com.anateam.dto.UserUpdateDto;
 import com.anateam.entity.User;
 import com.anateam.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

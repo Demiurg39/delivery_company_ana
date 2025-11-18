@@ -1,9 +1,10 @@
 package com.anateam.service;
 
-import com.anateam.dto.UserResponseDto;
-import com.anateam.dto.UserUpdateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.anateam.dto.UserResponseDto;
+import com.anateam.dto.UserUpdateDto;
 
 public interface UserService {
 

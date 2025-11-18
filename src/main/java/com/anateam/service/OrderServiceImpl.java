@@ -1,5 +1,7 @@
 package com.anateam.service;
 
+import org.springframework.stereotype.Service;
+
 import com.anateam.dto.GpsCoordinatesDto;
 import com.anateam.dto.OrderCreationDto;
 import com.anateam.dto.OrderResponseDto;
@@ -11,8 +13,8 @@ import com.anateam.entity.Order;
 import com.anateam.entity.OrderStatus;
 import com.anateam.repository.CourierRepository;
 import com.anateam.repository.OrderRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

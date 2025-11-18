@@ -1,12 +1,5 @@
 package com.anateam.controller;
-import com.anateam.dto.CourierProfileDto;
-import com.anateam.dto.CourierStatusUpdateDto;
-import com.anateam.dto.GpsCoordinatesDto;
-import com.anateam.entity.User;
-import com.anateam.repository.UserRepository;
-import com.anateam.service.CourierService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +11,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.anateam.dto.CourierProfileDto;
+import com.anateam.dto.CourierStatusUpdateDto;
+import com.anateam.dto.GpsCoordinatesDto;
+import com.anateam.entity.User;
+import com.anateam.repository.UserRepository;
+import com.anateam.service.CourierService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/couriers")
