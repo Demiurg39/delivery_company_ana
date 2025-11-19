@@ -1,17 +1,17 @@
 package com.anateam.service;
 
-import org.springframework.stereotype.Service;
-
 import com.anateam.dto.PaymentRequestDto;
 import com.anateam.dto.PaymentResponseDto;
+import com.anateam.dto.PaymentUpdateDto;
 import com.anateam.entity.Order;
+import com.anateam.entity.PaymenStatus;
 import com.anateam.entity.Payment;
 import com.anateam.entity.PaymentMethod;
 import com.anateam.entity.PaymentStatus;
 import com.anateam.repository.OrderRepository;
 import com.anateam.repository.PaymentRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -28,23 +28,39 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentResponseDto createPayment(PaymentRequestDto requestDto,
-                                            Integer customerId) {
-        Order order =
-            orderRepository.findById(requestDto.orderId())
+    public PaymentResponseDto createPayment(PaymentRequestDto requestDto, Integer customerId) {
+        Order order = orderRepository.findById(requestDto.orderId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
         Payment payment = new Payment();
         payment.setOrder(order);
         payment.setAmount(requestDto.amount());
-        payment.setPaymentMethod(
-            PaymentMethod.valueOf(requestDto.paymentMethod().toUpperCase()));
+        payment.setPaymentMethod(PaymentMethod.valueOf(requestDto.paymentMethod().toUpperCase()));
         payment.setStatus(PaymentStatus.PENDING);
 
         paymentRepository.save(payment);
 
         return toPaymentResponseDto(payment);
     }
+
+    @Override
+    public PaymentResponseDto updatePayment(PaymentUpdateDto updateDto) {
+        Payment payment = paymentRepository.findByOrderId(updateDto.id())
+            .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        String status = updateDto.status();
+        String method = updateDto.paymentMethod();
+
+        if (status != null)
+            payment.setStatus(PaymentStatus.valueOf(status));
+        if (method != null)
+            payment.setPaymentMethod(PaymentMethod.valueOf(method));
+
+        paymentRepository.save(payment);
+
+        return toPaymentResponseDto(payment);
+    }
+
     @Override
     public PaymentResponseDto getPaymentByOrderId(Integer orderId) {
         Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(
