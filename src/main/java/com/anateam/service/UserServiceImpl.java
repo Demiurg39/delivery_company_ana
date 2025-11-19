@@ -36,8 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateUserById(Integer id,
-                                          UserUpdateDto userUpdateDto) {
+    public UserResponseDto updateUserById(Integer id, UserUpdateDto userUpdateDto) {
         User user = userRepository.findById(id).orElseThrow(
             () -> new RuntimeException("User not found"));
 

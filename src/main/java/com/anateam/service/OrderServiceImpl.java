@@ -1,7 +1,5 @@
 package com.anateam.service;
 
-import org.springframework.stereotype.Service;
-
 import com.anateam.dto.GpsCoordinatesDto;
 import com.anateam.dto.OrderCreationDto;
 import com.anateam.dto.OrderResponseDto;
@@ -13,8 +11,8 @@ import com.anateam.entity.Order;
 import com.anateam.entity.OrderStatus;
 import com.anateam.repository.CourierRepository;
 import com.anateam.repository.OrderRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +25,13 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDto createOrder(OrderCreationDto creationDto,
                                         UserResponseDto userDto) {
         Order order = new Order();
+        GpsCoordinates pickupCoords = toGpsCoordinatesEntity(creationDto.pickupCoordinates());
+        GpsCoordinates deliveryCoords = toGpsCoordinatesEntity(creationDto.deliveryCoordinates());
+
         order.setPickupAddress(creationDto.pickupAddress());
         order.setDeliveryAddress(creationDto.deliveryAddress());
-        order.setPickupCoordinates(creationDto.pickupCoordinates());
-        order.setDeliveryCoordinates(creationDto.deliveryCoordinates());
+        order.setPickupCoordinates(pickupCoords);
+        order.setDeliveryCoordinates(deliveryCoords);
         order.setDescription(creationDto.description());
         order.setStatus(OrderStatus.NEW);
 
@@ -95,5 +96,12 @@ public class OrderServiceImpl implements OrderService {
     private GpsCoordinatesDto toGpsCoordinatesDto(GpsCoordinates coords) {
         return new GpsCoordinatesDto(coords.getLatitude(),
                                      coords.getLongitude());
+    }
+
+    private GpsCoordinates toGpsCoordinatesEntity(GpsCoordinatesDto dto) {
+        if (dto == null)
+            return null;
+
+        return new GpsCoordinates(dto.latitude(), dto.longitude());
     }
 }

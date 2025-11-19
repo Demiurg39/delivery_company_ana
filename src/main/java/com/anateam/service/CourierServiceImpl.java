@@ -36,28 +36,27 @@ public class CourierServiceImpl implements CourierService {
 
     @Override
     public CourierProfileDto findDtoById(Integer courierId) {
-        Courier courier = courierRepository.findById(courierId).orElseThrow(
-            () -> new RuntimeException("Courier not found"));
+        Courier courier = courierRepository.findById(courierId)
+            .orElseThrow(() -> new RuntimeException("Courier not found"));
         return toCourierProfileDto(courier);
     }
 
     @Override
     public CourierProfileDto updateStatus(Integer courierId, String status) {
-        Courier courier = courierRepository.findById(courierId).orElseThrow(
-            () -> new RuntimeException("Courier not found"));
+        Courier courier = courierRepository.findById(courierId)
+            .orElseThrow(() -> new RuntimeException("Courier not found"));
 
         courier.setStatus(CourierStatus.valueOf(status.toUpperCase()));
         return toCourierProfileDto(courierRepository.save(courier));
     }
 
     @Override
-    public void updateLocation(Integer courierId,
-                               GpsCoordinatesDto locationDto) {
-        Courier courier = courierRepository.findById(courierId).orElseThrow(
-            () -> new RuntimeException("Courier not found"));
+    public void updateLocation(Integer courierId, GpsCoordinatesDto locationDto) {
+        Courier courier = courierRepository.findById(courierId)
+            .orElseThrow(() -> new RuntimeException("Courier not found"));
 
         GpsCoordinates newCoordinates =
-            new GpsCoordinates(locationDto.latitude(), locationDto.longitude());
+        new GpsCoordinates(locationDto.latitude(), locationDto.longitude());
 
         courier.setCurrentCoordinates(newCoordinates);
 
