@@ -31,7 +31,7 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Creates a new user account (Customer or Courier) and returns a JWT token.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "User successfully registered"),
+        @ApiResponse(responseCode = "201", description = "User successfully registered"),
         @ApiResponse(responseCode = "400", description = "Validation error or user already exists")
     })
     public ResponseEntity<UserResponseDto> register(@Valid @RequestBody UserRegistrationDto registrationDto) {
