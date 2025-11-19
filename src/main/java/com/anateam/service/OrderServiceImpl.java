@@ -1,5 +1,7 @@
 package com.anateam.service;
 
+import org.springframework.stereotype.Service;
+
 import com.anateam.dto.GpsCoordinatesDto;
 import com.anateam.dto.OrderCreationDto;
 import com.anateam.dto.OrderResponseDto;
@@ -9,10 +11,12 @@ import com.anateam.entity.Courier;
 import com.anateam.entity.GpsCoordinates;
 import com.anateam.entity.Order;
 import com.anateam.entity.OrderStatus;
+import com.anateam.entity.User;
 import com.anateam.repository.CourierRepository;
 import com.anateam.repository.OrderRepository;
+import com.anateam.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -20,11 +24,15 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final CourierRepository courierRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public OrderResponseDto createOrder(OrderCreationDto creationDto,
-                                        UserResponseDto userDto) {
+    public OrderResponseDto createOrder(OrderCreationDto creationDto, UserResponseDto userDto) {
+        User customer = userRepository.findById(userDto.id())
+            .orElseThrow(() -> new RuntimeException("Client not found"));
+
         Order order = new Order();
+
         GpsCoordinates pickupCoords = toGpsCoordinatesEntity(creationDto.pickupCoordinates());
         GpsCoordinates deliveryCoords = toGpsCoordinatesEntity(creationDto.deliveryCoordinates());
 
@@ -34,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
         order.setDeliveryCoordinates(deliveryCoords);
         order.setDescription(creationDto.description());
         order.setStatus(OrderStatus.NEW);
+        order.setCustomer(customer);
 
         orderRepository.save(order);
         return toOrderResponseDto(order);

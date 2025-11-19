@@ -2,6 +2,7 @@ package com.anateam.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,10 +32,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping("/api/orders")
 @RequiredArgsConstructor
 @Tag(name = "Order Management", description = "Operations for creating, tracking, and managing delivery orders")
-@SecurityRequirement(name = "bearerAuth") // Указывает, что эти методы требуют JWT
+@SecurityRequirement(name = "bearerAuth")
 public class OrderController {
 
     private final OrderService orderService;
@@ -42,9 +43,11 @@ public class OrderController {
     private final UserRepository userRepository;
 
     @PostMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     @Operation(summary = "Create a new order", description = "Allows an authenticated customer to place a new delivery order.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Order created successfully"),
+        @ApiResponse(responseCode = "400", description = "Validation data error"),
         @ApiResponse(responseCode = "403", description = "Forbidden (if user is not authorized)")
     })
     public ResponseEntity<OrderResponseDto> createOrder(
@@ -60,13 +63,19 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Order found")
     @ApiResponse(responseCode = "404", description = "Order not found")
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Integer id) {
         OrderResponseDto orderDto = orderService.findOrderDtoById(id);
         return ResponseEntity.ok(orderDto);
     }
 
     @PostMapping("/{id}/accept")
+    @PreAuthorize("hasRole('COURIER')")
     @Operation(summary = "Accept an order", description = "Allows a courier to accept a pending order.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Заказ принят"),
+        @ApiResponse(responseCode = "409", description = "Заказ уже занят другим курьером")
+    })
     public ResponseEntity<OrderResponseDto> acceptOrder(
         @PathVariable Integer id,
         @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
@@ -77,12 +86,12 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<OrderResponseDto>
     updateOrderStatus(@PathVariable Integer id,
                       @Valid @RequestBody OrderStatusUpdateDto statusUpdateDto,
                       @AuthenticationPrincipal UserDetails userDetails) {
-        UserResponseDto authenticatedCourier =
-            getDtoFromUserDetails(userDetails);
+        UserResponseDto authenticatedCourier = getDtoFromUserDetails(userDetails);
         OrderResponseDto updatedOrder = orderService.updateOrderStatus(
             authenticatedCourier.id(), statusUpdateDto, authenticatedCourier);
         return ResponseEntity.ok(updatedOrder);
@@ -91,10 +100,7 @@ public class OrderController {
     private User getAppUserFromUserDetails(UserDetails userDetails) {
         String phoneNumber = userDetails.getUsername();
         return userRepository.findByPhoneNumber(phoneNumber)
-            .orElseThrow(
-                ()
-                    -> new RuntimeException(
-                        "Аутентифицированный пользователь не найден в БД"));
+            .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     private UserResponseDto getDtoFromUserDetails(UserDetails userDetails) {

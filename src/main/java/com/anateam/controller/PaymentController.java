@@ -2,6 +2,7 @@ package com.anateam.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,20 +18,26 @@ import com.anateam.dto.PaymentUpdateDto;
 import com.anateam.entity.User;
 import com.anateam.repository.UserRepository;
 import com.anateam.service.PaymentService;
+import com.anateam.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
+@Tag(name = "Payments", description = "Обработка платежей")
+@SecurityRequirement(name = "bearerAuth")
 public class PaymentController {
     private final PaymentService paymentService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @PostMapping
+    @PreAuthorize("hasRole('CUSTOMER')") // Платит обычно клиент
     @Operation(summary = "Initiate a payment", description = "Process a payment for a specific order.")
     @ApiResponse(responseCode = "200", description = "Payment processed successfully")
     public ResponseEntity<PaymentResponseDto> createPayment(@Valid @RequestBody PaymentRequestDto requestDto, Integer courierId) {
@@ -39,6 +46,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get payment status", description = "Check the status of a specific payment transaction.")
     @ApiResponse(responseCode = "200", description = "Payment details found")
     @ApiResponse(responseCode = "404", description = "Payment not found")
