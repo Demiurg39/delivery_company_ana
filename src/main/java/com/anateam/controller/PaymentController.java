@@ -16,12 +16,15 @@ import com.anateam.dto.PaymentRequestDto;
 import com.anateam.dto.PaymentResponseDto;
 import com.anateam.dto.PaymentUpdateDto;
 import com.anateam.entity.User;
+import com.anateam.repository.PaymentRepository;
 import com.anateam.repository.UserRepository;
 import com.anateam.service.PaymentService;
 import com.anateam.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -30,39 +33,68 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
-@Tag(name = "Payments", description = "Обработка платежей")
+@Tag(name = "Payments", description = "Operations for processing and managing payments")
 @SecurityRequirement(name = "bearerAuth")
 public class PaymentController {
     private final PaymentService paymentService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @PostMapping
-    @PreAuthorize("hasRole('CUSTOMER')") // Платит обычно клиент
-    @Operation(summary = "Initiate a payment", description = "Process a payment for a specific order.")
-    @ApiResponse(responseCode = "200", description = "Payment processed successfully")
-    public ResponseEntity<PaymentResponseDto> createPayment(@Valid @RequestBody PaymentRequestDto requestDto, Integer courierId) {
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @Operation(summary = "Initiate a payment", description = "Process a payment for a specific order. Requires CUSTOMER role.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Payment processed successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid payment request or validation error"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - User does not have CUSTOMER role")
+    })
+    public ResponseEntity<PaymentResponseDto> createPayment(
+            @Valid @RequestBody PaymentRequestDto requestDto,
+            @Parameter(description = "ID of the courier (optional)", required = false) Integer courierId) {
         PaymentResponseDto paymentResponse = paymentService.createPayment(requestDto, courierId);
         return new ResponseEntity<>(paymentResponse, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{orderId}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Get payment status", description = "Check the status of a specific payment transaction.")
-    @ApiResponse(responseCode = "200", description = "Payment details found")
-    @ApiResponse(responseCode = "404", description = "Payment not found")
+    @Operation(summary = "Get payment status", description = "Check the status of a specific payment transaction by Order ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Payment details found"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "404", description = "Payment not found")
+    })
     public ResponseEntity<PaymentResponseDto> getPayment(@PathVariable Integer orderId) {
         PaymentResponseDto responseDto = paymentService.getPaymentByOrderId(orderId);
         return ResponseEntity.ok(responseDto);
     }
 
     @PutMapping
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Update payment", description = "Updates an existing payment record.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Payment updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid update request"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "404", description = "Payment not found")
+    })
     public ResponseEntity<PaymentResponseDto> updatePayment(@Valid @RequestBody PaymentUpdateDto updateDto) {
-        // TODO: Получить аутентифицированного клиента и проверить, что это его заказ
+        // TODO: Validate that the authenticated user owns the order
         PaymentResponseDto paymentResponse = paymentService.updatePayment(updateDto);
-        return new ResponseEntity<>( paymentResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(paymentResponse, HttpStatus.OK);
     }
 
     @GetMapping("/orders/{orderId}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get payment for order", description = "Retrieves payment details associated with a specific order.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Payment details found"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "404", description = "Payment not found for the given order")
+    })
     public ResponseEntity<PaymentResponseDto>
     getPaymentForOrder(@PathVariable Integer orderId) {
         PaymentResponseDto paymentResponse =
@@ -73,7 +105,8 @@ public class PaymentController {
 
     private User getAppUserFromUserDetails(UserDetails userDetails) {
         String phoneNumber = userDetails.getUsername();
+        // FIX: get rid of this cause controller should not have access to userRepository
         return userRepository.findByPhoneNumber(phoneNumber)
-            .orElseThrow( () -> new RuntimeException("Аутентифицированный пользователь не найден в БД"));
+            .orElseThrow( () -> new RuntimeException("Authenticated user not found"));
     }
 }

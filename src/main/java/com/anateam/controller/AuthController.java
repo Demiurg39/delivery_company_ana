@@ -32,7 +32,8 @@ public class AuthController {
     @Operation(summary = "Register a new user", description = "Creates a new user account (Customer or Courier) and returns a JWT token.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "User successfully registered"),
-        @ApiResponse(responseCode = "400", description = "Validation error or user already exists")
+        @ApiResponse(responseCode = "400", description = "Validation error"),
+        @ApiResponse(responseCode = "409", description = "Conflict - User with this phone number already exists")
     })
     public ResponseEntity<UserResponseDto> register(@Valid @RequestBody UserRegistrationDto registrationDto) {
         return ResponseEntity.ok(authService.register(registrationDto));
@@ -42,6 +43,7 @@ public class AuthController {
     @Operation(summary = "User login", description = "Authenticates a user by phone number and password, returning a JWT token.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successful login"),
+        @ApiResponse(responseCode = "400", description = "Invalid login request format"),
         @ApiResponse(responseCode = "401", description = "Invalid credentials")
     })
     public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginDto loginDto) {

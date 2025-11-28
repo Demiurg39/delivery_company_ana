@@ -21,6 +21,7 @@ import com.anateam.service.CourierService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -37,7 +38,11 @@ public class CourierController {
 
     @PutMapping("/me/status")
     @Operation(summary = "Update courier status", description = "Allows a courier to change their availability status.")
-    @ApiResponse(responseCode = "200", description = "Status updated successfully")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Status updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid status value"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public ResponseEntity<CourierProfileDto>
     updateMyStatus(@Valid @RequestBody CourierStatusUpdateDto statusDto,
                    @AuthenticationPrincipal UserDetails userDetails) {
@@ -50,7 +55,11 @@ public class CourierController {
 
     @PutMapping("/me/location")
     @Operation(summary = "Update GPS location", description = "Updates the current GPS coordinates of the courier.")
-    @ApiResponse(responseCode = "204", description = "Location updated successfully")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Location updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid coordinates"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public ResponseEntity<Void>
     updateMyLocation(@Valid @RequestBody GpsCoordinatesDto locationDto,
                      @AuthenticationPrincipal UserDetails userDetails) {
@@ -63,6 +72,11 @@ public class CourierController {
 
     @GetMapping
     @Operation(summary = "Get all couriers", description = "Retrieves a paginated list of all couriers (Admin use).")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of couriers retrieved"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Admin access required")
+    })
     public ResponseEntity<Page<CourierProfileDto>>
     getAllCouriers(Pageable pageable) {
         Page<CourierProfileDto> couriers = courierService.findAll(pageable);
@@ -71,8 +85,12 @@ public class CourierController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get courier by ID", description = "Retrieves profile information of a specific courier.")
-    @ApiResponse(responseCode = "200", description = "Courier found")
-    @ApiResponse(responseCode = "404", description = "Courier not found")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Courier found"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "404", description = "Courier not found")
+    })
     public ResponseEntity<CourierProfileDto>
     getCourierById(@PathVariable Integer id) {
         CourierProfileDto courier = courierService.findDtoById(id);
