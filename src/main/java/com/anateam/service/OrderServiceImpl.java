@@ -1,6 +1,8 @@
 package com.anateam.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.anateam.dto.GpsCoordinatesDto;
 import com.anateam.dto.OrderCreationDto;
@@ -112,5 +114,10 @@ public class OrderServiceImpl implements OrderService {
             return null;
 
         return new GpsCoordinates(dto.latitude(), dto.longitude());
+    }
+
+    @Override
+    public Page<OrderResponseDto> findAll(Pageable pageable) {
+        return orderRepository.findAll(pageable).map(this::toOrderResponseDto);
     }
 }

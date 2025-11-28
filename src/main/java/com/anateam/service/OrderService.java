@@ -4,6 +4,8 @@ import com.anateam.dto.OrderCreationDto;
 import com.anateam.dto.OrderResponseDto;
 import com.anateam.dto.OrderStatusUpdateDto;
 import com.anateam.dto.UserResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
 
@@ -18,4 +20,6 @@ public interface OrderService {
     );
 
     OrderResponseDto findOrderDtoById(Integer orderId);
+
+    Page<OrderResponseDto> findAll(Pageable pageable);
 }

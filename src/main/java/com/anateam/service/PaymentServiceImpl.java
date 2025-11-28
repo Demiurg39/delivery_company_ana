@@ -4,7 +4,6 @@ import com.anateam.dto.PaymentRequestDto;
 import com.anateam.dto.PaymentResponseDto;
 import com.anateam.dto.PaymentUpdateDto;
 import com.anateam.entity.Order;
-import com.anateam.entity.PaymenStatus;
 import com.anateam.entity.Payment;
 import com.anateam.entity.PaymentMethod;
 import com.anateam.entity.PaymentStatus;

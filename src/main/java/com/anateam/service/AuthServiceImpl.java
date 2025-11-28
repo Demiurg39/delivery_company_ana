@@ -33,6 +33,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public UserResponseDto register(UserRegistrationDto registrationDto) {
+        // TODO: make sms confirmation of phone number
+        // and phone number validation
         userRepository.findByPhoneNumber(registrationDto.phoneNumber())
             .ifPresent(user -> {
                 throw new IllegalStateException(
