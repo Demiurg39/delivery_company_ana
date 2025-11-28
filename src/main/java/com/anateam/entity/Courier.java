@@ -28,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "couriers")
-public class Courier {
+public class Courier extends BaseEntity {
 
     @Id @Column(name = "user_id") private Integer id;
 
@@ -51,20 +51,4 @@ public class Courier {
         @AttributeOverride(name = "longitude", column = @Column(name = "current_longitude"))
     })
     private GpsCoordinates currentCoordinates;
-
-    @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at") private OffsetDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = OffsetDateTime.now();
-        updatedAt = OffsetDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = OffsetDateTime.now();
-    }
 }
