@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.anateam.entity.Courier;
 import com.anateam.entity.CourierStatus;
 import com.anateam.entity.UserRole;
-import com.anateam.entity.VehincleType;
+import com.anateam.entity.VehicleType;
 
 public interface CourierRepository extends JpaRepository<Courier, Integer> {
 
@@ -18,5 +18,5 @@ public interface CourierRepository extends JpaRepository<Courier, Integer> {
 
     List<Courier> findAllByStatusAndUserRole(CourierStatus status, UserRole role);
 
-    List<Courier> findAllByVehicleType(VehincleType vehicleType);
+    List<Courier> findAllByVehicleType(VehicleType vehicleType);
 }
