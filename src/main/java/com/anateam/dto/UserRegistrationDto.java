@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 public record UserRegistrationDto(
-    
+
     @Schema(description = "User phone number (login)", example = "89991234567", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank 
     String phoneNumber,
@@ -15,8 +15,8 @@ public record UserRegistrationDto(
 
     @Schema(description = "User password", example = "strongPass123!", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank
-    String password,
+    String password
 
-    @Schema(description = "Role of the user: CUSTOMER or COURIER", example = "CUSTOMER", defaultValue = "CUSTOMER")
-    String role
+    // @Schema(description = "Role of the user: CUSTOMER or COURIER", example = "CUSTOMER", defaultValue = "CUSTOMER")
+    // String role
 ) {}
