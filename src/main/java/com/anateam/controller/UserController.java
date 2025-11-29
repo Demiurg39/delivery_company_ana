@@ -25,11 +25,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "User Management", description = "Admin operations for managing users")
-@SecurityRequirement(name = "bearerAuth")
+@RequestMapping("/api/users")
 @PreAuthorize("hasRole('ADMIN')")
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "User Management", description = "Admin operations for managing users")
 public class UserController {
 
     private final UserService userService;

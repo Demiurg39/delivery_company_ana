@@ -31,10 +31,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/payments")
 @RequiredArgsConstructor
-@Tag(name = "Payments", description = "Operations for processing and managing payments")
+@RequestMapping("/api/payments")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Payments", description = "Operations for processing and managing payments")
 public class PaymentController {
     private final PaymentService paymentService;
     private final UserService userService;

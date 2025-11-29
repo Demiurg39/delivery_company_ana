@@ -28,10 +28,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/couriers")
 @RequiredArgsConstructor
-@Tag(name = "Courier Management", description = "Endpoints for managing courier statuses and locations")
+@RequestMapping("/api/couriers")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Courier Management", description = "Endpoints for managing courier statuses and locations")
 public class CourierController {
     private final CourierService courierService;
     private final UserRepository userRepository;
@@ -47,9 +47,7 @@ public class CourierController {
     updateMyStatus(@Valid @RequestBody CourierStatusUpdateDto statusDto,
                    @AuthenticationPrincipal UserDetails userDetails) {
         Integer courierId = getAppUserFromUserDetails(userDetails).getId();
-        CourierProfileDto updatedProfile =
-            courierService.updateStatus(courierId, statusDto.status());
-
+        CourierProfileDto updatedProfile = courierService.updateStatus(courierId, statusDto.status());
         return ResponseEntity.ok(updatedProfile);
     }
 

@@ -22,21 +22,43 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@RequestMapping("/api/auth")
 @Tag(name = "Authentication", description = "Registration and Authentication for users")
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/register")
-    @Operation(summary = "Register a new user", description = "Creates a new user account (Customer or Courier) and returns a JWT token.")
+    @PostMapping("/register/client")
+    @Operation(summary = "Register a new client", description = "Creates a new client account and returns a JWT token.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "User successfully registered"),
         @ApiResponse(responseCode = "400", description = "Validation error"),
         @ApiResponse(responseCode = "409", description = "Conflict - User with this phone number already exists")
     })
-    public ResponseEntity<UserResponseDto> register(@Valid @RequestBody UserRegistrationDto registrationDto) {
-        return ResponseEntity.ok(authService.register(registrationDto));
+    public ResponseEntity<UserResponseDto> registerClient(@Valid @RequestBody UserRegistrationDto registrationDto) {
+        return ResponseEntity.ok(authService.registerClient(registrationDto));
+    }
+
+    @PostMapping("/register/courier")
+    @Operation(summary = "Register a new courier", description = "Creates a new courier account and returns a JWT token.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User successfully registered"),
+        @ApiResponse(responseCode = "400", description = "Validation error"),
+        @ApiResponse(responseCode = "409", description = "Conflict - User with this phone number already exists")
+    })
+    public ResponseEntity<UserResponseDto> registerCourier(@Valid @RequestBody UserRegistrationDto registrationDto) {
+        return ResponseEntity.ok(authService.registerCourier(registrationDto));
+    }
+
+    @PostMapping("/register/admin")
+    @Operation(summary = "Register a new admin", description = "Creates a new admin account and returns a JWT token.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User successfully registered"),
+        @ApiResponse(responseCode = "400", description = "Validation error"),
+        @ApiResponse(responseCode = "409", description = "Conflict - User with this phone number already exists")
+    })
+    public ResponseEntity<UserResponseDto> registerAdmin(@Valid @RequestBody UserRegistrationDto registrationDto) {
+        return ResponseEntity.ok(authService.registerAdmin(registrationDto));
     }
 
     @PostMapping("/login")

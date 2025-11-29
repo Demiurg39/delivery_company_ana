@@ -34,12 +34,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/orders")
 @RequiredArgsConstructor
-@Tag(name = "Order Management", description = "Operations for creating, tracking, and managing delivery orders")
+@RequestMapping("/api/orders")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Order Management", description = "Operations for creating, tracking, and managing delivery orders")
 public class OrderController {
-
     private final OrderService orderService;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -55,7 +54,7 @@ public class OrderController {
     })
     public ResponseEntity<OrderResponseDto> createOrder(
             @Valid @RequestBody OrderCreationDto creationDto,
-            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails // Скрываем userDetails из Swagger
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
     ) {
         UserResponseDto authenticatedCustomer = getDtoFromUserDetails(userDetails);
         OrderResponseDto createdOrder = orderService.createOrder(creationDto, authenticatedCustomer);
@@ -124,7 +123,10 @@ public class OrderController {
                       @AuthenticationPrincipal UserDetails userDetails) {
         UserResponseDto authenticatedCourier = getDtoFromUserDetails(userDetails);
         OrderResponseDto updatedOrder = orderService.updateOrderStatus(
-            authenticatedCourier.id(), statusUpdateDto, authenticatedCourier);
+            authenticatedCourier.id(),
+            statusUpdateDto,
+            authenticatedCourier
+        );
         return ResponseEntity.ok(updatedOrder);
     }
 
@@ -136,8 +138,11 @@ public class OrderController {
 
     private UserResponseDto getDtoFromUserDetails(UserDetails userDetails) {
         User user = getAppUserFromUserDetails(userDetails);
-        return new UserResponseDto(user.getId(), user.getFullName(),
-                                   user.getPhoneNumber(), user.getRole().name(),
-                                   user.getCreatedAt().toString());
+        return new UserResponseDto(
+            user.getId(),
+            user.getFullName(),
+            user.getPhoneNumber(),
+            user.getRole().name(),
+            user.getCreatedAt().toString());
     }
 }
