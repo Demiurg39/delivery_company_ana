@@ -31,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto createOrder(OrderCreationDto creationDto, UserResponseDto userDto) {
         User customer = userRepository.findById(userDto.id())
-            .orElseThrow(() -> new RuntimeException("Client not found"));
+            .orElseThrow(() -> new RuntimeException("Customer not found"));
 
         Order order = new Order();
 

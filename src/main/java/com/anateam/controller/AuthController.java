@@ -28,15 +28,15 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/register/client")
-    @Operation(summary = "Register a new client", description = "Creates a new client account and returns a JWT token.")
+    @PostMapping("/register/customer")
+    @Operation(summary = "Register a new customer", description = "Creates a new customer account and returns a JWT token.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "User successfully registered"),
         @ApiResponse(responseCode = "400", description = "Validation error"),
         @ApiResponse(responseCode = "409", description = "Conflict - User with this phone number already exists")
     })
-    public ResponseEntity<UserResponseDto> registerClient(@Valid @RequestBody UserRegistrationDto registrationDto) {
-        return ResponseEntity.ok(authService.registerClient(registrationDto));
+    public ResponseEntity<UserResponseDto> registerCustomer(@Valid @RequestBody UserRegistrationDto registrationDto) {
+        return ResponseEntity.ok(authService.registerCustomer(registrationDto));
     }
 
     @PostMapping("/register/courier")
