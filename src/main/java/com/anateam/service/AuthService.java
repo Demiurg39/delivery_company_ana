@@ -7,7 +7,9 @@ import com.anateam.dto.UserResponseDto;
 
 public interface AuthService {
 
-    UserResponseDto register(UserRegistrationDto registrationDto);
+    UserResponseDto registerCustomer(UserRegistrationDto registrationDto);
+    UserResponseDto registerCourier(UserRegistrationDto registrationDto);
+    UserResponseDto registerAdmin(UserRegistrationDto registrationDto);
 
     AuthResponseDto login(LoginDto loginDto);
 }

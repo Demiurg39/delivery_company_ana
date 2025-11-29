@@ -32,9 +32,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public UserResponseDto register(UserRegistrationDto registrationDto) {
+    public UserResponseDto registerCustomer(UserRegistrationDto registrationDto) {
         // TODO: make sms confirmation of phone number
         // and phone number validation
+        // Make method to validate phoneNumber, and send verification code
         userRepository.findByPhoneNumber(registrationDto.phoneNumber())
             .ifPresent(user -> {
                 throw new IllegalStateException(
@@ -49,6 +50,59 @@ public class AuthServiceImpl implements AuthService {
         newUser.setPhoneNumber(registrationDto.phoneNumber());
         newUser.setPasswordHash(hashedPassword);
         newUser.setRole(UserRole.CUSTOMER);
+
+        User savedUser = userRepository.save(newUser);
+
+        return toUserResponseDto(savedUser);
+    }
+
+    @Override
+    @Transactional
+    public UserResponseDto registerCourier(UserRegistrationDto registrationDto) {
+        // TODO: make sms confirmation of phone number
+        // and phone number validation
+        // Make method to validate phoneNumber, and send verification code
+        userRepository.findByPhoneNumber(registrationDto.phoneNumber())
+            .ifPresent(user -> {
+                throw new IllegalStateException(
+                    "User with this phone number already exists.");
+            });
+
+        String hashedPassword =
+            passwordEncoder.encode(registrationDto.password());
+
+        User newUser = new User();
+        newUser.setFullName(registrationDto.fullName());
+        newUser.setPhoneNumber(registrationDto.phoneNumber());
+        newUser.setPasswordHash(hashedPassword);
+        newUser.setRole(UserRole.COURIER);
+
+        User savedUser = userRepository.save(newUser);
+
+        return toUserResponseDto(savedUser);
+    }
+
+
+    @Override
+    @Transactional
+    public UserResponseDto registerAdmin(UserRegistrationDto registrationDto) {
+        // TODO: make sms confirmation of phone number
+        // and phone number validation
+        // Make method to validate phoneNumber, and send verification code
+        userRepository.findByPhoneNumber(registrationDto.phoneNumber())
+            .ifPresent(user -> {
+                throw new IllegalStateException(
+                    "User with this phone number already exists.");
+            });
+
+        String hashedPassword =
+            passwordEncoder.encode(registrationDto.password());
+
+        User newUser = new User();
+        newUser.setFullName(registrationDto.fullName());
+        newUser.setPhoneNumber(registrationDto.phoneNumber());
+        newUser.setPasswordHash(hashedPassword);
+        newUser.setRole(UserRole.ADMIN);
 
         User savedUser = userRepository.save(newUser);
 
