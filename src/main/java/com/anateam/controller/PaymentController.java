@@ -3,6 +3,7 @@ package com.anateam.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +18,6 @@ import com.anateam.dto.PaymentResponseDto;
 import com.anateam.dto.PaymentUpdateDto;
 import com.anateam.entity.User;
 import com.anateam.repository.PaymentRepository;
-import com.anateam.repository.UserRepository;
 import com.anateam.service.PaymentService;
 import com.anateam.service.UserService;
 
@@ -38,7 +38,6 @@ import lombok.RequiredArgsConstructor;
 public class PaymentController {
     private final PaymentService paymentService;
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
@@ -81,7 +80,10 @@ public class PaymentController {
         @ApiResponse(responseCode = "404", description = "Payment not found")
     })
     public ResponseEntity<PaymentResponseDto> updatePayment(@Valid @RequestBody PaymentUpdateDto updateDto) {
-        // TODO: Validate that the authenticated user owns the order
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!paymentService.isOrderOwnedByUser(updateDto.id(), userDetails.getUsername())) {
+             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         PaymentResponseDto paymentResponse = paymentService.updatePayment(updateDto);
         return new ResponseEntity<>(paymentResponse, HttpStatus.OK);
     }
@@ -103,10 +105,4 @@ public class PaymentController {
     }
 
 
-    private User getAppUserFromUserDetails(UserDetails userDetails) {
-        String phoneNumber = userDetails.getUsername();
-        // FIX: get rid of this cause controller should not have access to userRepository
-        return userRepository.findByPhoneNumber(phoneNumber)
-            .orElseThrow( () -> new RuntimeException("Authenticated user not found"));
-    }
 }

@@ -13,6 +13,8 @@ public interface UserService {
     public UserResponseDto findById(Integer id);
 
     public UserResponseDto updateUserById(Integer id, UserUpdateDto userUpdateDto);
+    
+    public UserResponseDto getUserByPhoneNumber(String phoneNumber);
 
     public void deleteById(Integer id);
 }

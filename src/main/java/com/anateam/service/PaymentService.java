@@ -11,4 +11,6 @@ public interface PaymentService {
     PaymentResponseDto getPaymentByOrderId(Integer orderId);
 
     PaymentResponseDto updatePayment(PaymentUpdateDto updateDto);
+
+    boolean isOrderOwnedByUser(Integer orderId, String phoneNumber);
 }

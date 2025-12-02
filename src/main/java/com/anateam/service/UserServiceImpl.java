@@ -54,6 +54,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseDto getUserByPhoneNumber(String phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        return toUserResponseDto(user);
+    }
+
+    @Override
     public void deleteById(Integer id) {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("User not found");

@@ -67,4 +67,11 @@ public class PaymentServiceImpl implements PaymentService {
 
         return toPaymentResponseDto(payment);
     }
+
+    @Override
+    public boolean isOrderOwnedByUser(Integer orderId, String phoneNumber) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) return false;
+        return order.getCustomer().getPhoneNumber().equals(phoneNumber);
+    }
 }
