@@ -31,7 +31,7 @@ public class AuthController {
     @PostMapping("/register/customer")
     @Operation(summary = "Register a new customer", description = "Creates a new customer account and returns a JWT token.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "User successfully registered"),
+        @ApiResponse(responseCode = "200", description = "User successfully registered"),
         @ApiResponse(responseCode = "400", description = "Validation error"),
         @ApiResponse(responseCode = "409", description = "Conflict - User with this phone number already exists")
     })
@@ -42,7 +42,7 @@ public class AuthController {
     @PostMapping("/register/courier")
     @Operation(summary = "Register a new courier", description = "Creates a new courier account and returns a JWT token.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "User successfully registered"),
+        @ApiResponse(responseCode = "200", description = "User successfully registered"),
         @ApiResponse(responseCode = "400", description = "Validation error"),
         @ApiResponse(responseCode = "409", description = "Conflict - User with this phone number already exists")
     })
@@ -53,7 +53,7 @@ public class AuthController {
     @PostMapping("/register/admin")
     @Operation(summary = "Register a new admin", description = "Creates a new admin account and returns a JWT token.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "User successfully registered"),
+        @ApiResponse(responseCode = "200", description = "User successfully registered"),
         @ApiResponse(responseCode = "400", description = "Validation error"),
         @ApiResponse(responseCode = "409", description = "Conflict - User with this phone number already exists")
     })
