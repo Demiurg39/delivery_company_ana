@@ -50,4 +50,10 @@ public class User extends BaseEntity {
 
     @Column(name = "is_verified", nullable = false)
     private Boolean isVerified = false;
+
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
+    @Column(name = "refresh_token_expiry")
+    private OffsetDateTime refreshTokenExpiry;
 }

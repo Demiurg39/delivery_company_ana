@@ -6,6 +6,8 @@ import com.anateam.dto.UserRegistrationDto;
 import com.anateam.dto.UserResponseDto;
 import com.anateam.entity.UserRole;
 
+import jakarta.validation.constraints.NotBlank;
+
 public interface AuthService {
     UserResponseDto register(UserRegistrationDto registrationDto, UserRole role);
 
@@ -14,4 +16,6 @@ public interface AuthService {
     void sendVerificationCode(String phoneNumber);
 
     AuthResponseDto verifyCode(String phoneNumber, String code);
+
+    public AuthResponseDto refreshToken(String requestRefreshToken);
 }

@@ -1,12 +1,16 @@
 package com.anateam.service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +31,22 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserDetailServiceImpl userDetailService;
 
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
+
+    @Value("${application.jwt.refresh-token.expiration-days}")
+    private Integer refreshTokenExpiry;
+
+    private String createRefreshToken(User user) {
+        String refreshToken = UUID.randomUUID().toString();
+        user.setRefreshToken(refreshToken);
+        user.setRefreshTokenExpiry(OffsetDateTime.now().plusDays(refreshTokenExpiry));
+        userRepository.save(user);
+        return refreshToken;
+    }
 
     @Override
     @Transactional
@@ -81,9 +98,24 @@ public class AuthServiceImpl implements AuthService {
                 appUser.getPhoneNumber(), appUser.getPasswordHash(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + appUser.getRole().name())));
 
-        String jwtToken = jwtService.generateToken(userDetails);
+        String accessToken = jwtService.generateToken(userDetails);
+        String refreshToken = createRefreshToken(appUser);
 
-        return new AuthResponseDto(jwtToken);
+        return new AuthResponseDto(accessToken, refreshToken);
+    }
+
+    public AuthResponseDto refreshToken(String requestRefreshToken) throws UsernameNotFoundException {
+        User user = userRepository.findByRefreshToken(requestRefreshToken)
+            .orElseThrow(() -> new RuntimeException("Refresh Token not found"));
+
+        if (user.getRefreshTokenExpiry().isBefore(OffsetDateTime.now())) 
+            throw new RuntimeException("Refresh Token is expired. Please log in again.");
+
+        var userDetails = userDetailService.loadUserByUsername(user.getPhoneNumber());
+        String newAccessToken = jwtService.generateToken(userDetails);
+        String newRefreshToken = createRefreshToken(user);
+
+        return new AuthResponseDto(newAccessToken, newRefreshToken);
     }
 
     private UserResponseDto toUserResponseDto(User user) {
@@ -146,8 +178,9 @@ public class AuthServiceImpl implements AuthService {
                 user.getPhoneNumber(), user.getPasswordHash(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
 
-        String jwtToken = jwtService.generateToken(userDetails);
+        String accessToken = jwtService.generateToken(userDetails);
+        String refreshToken = createRefreshToken(user);
 
-        return new AuthResponseDto(jwtToken);
+        return new AuthResponseDto(accessToken, refreshToken);
     }
 }

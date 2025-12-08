@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anateam.dto.AuthResponseDto;
 import com.anateam.dto.LoginDto;
+import com.anateam.dto.RefreshTokenRequestDto;
 import com.anateam.dto.SendCodeDto;
 import com.anateam.dto.UserRegistrationDto;
 import com.anateam.dto.UserResponseDto;
@@ -96,5 +97,10 @@ public class AuthController {
     })
     public ResponseEntity<AuthResponseDto> verifyCode(@Valid @RequestBody VerifyCodeDto verifyCodeDto) {
         return ResponseEntity.ok(authService.verifyCode(verifyCodeDto.phoneNumber(), verifyCodeDto.code()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponseDto> refresh(@RequestBody RefreshTokenRequestDto request) {
+        return ResponseEntity.ok(authService.refreshToken(request.refreshToken()));
     }
 }

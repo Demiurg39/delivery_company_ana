@@ -18,11 +18,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     List<User> findByFullName(String fullName);
 
-    Optional<User> findByPhoneNumber(String phoneNumber);
-
     List<User> findByRole(UserRole role);
 
     List<User> findByCreatedAtBefore(OffsetDateTime date);
+
+    Optional<User> findByPhoneNumber(String phoneNumber);
+
+    Optional<User> findByRefreshToken(String refreshToken);
 
     @Modifying
     @Query("DELETE FROM User u WHERE u.isVerified = false AND u.createdAt < :cutoffTime")
