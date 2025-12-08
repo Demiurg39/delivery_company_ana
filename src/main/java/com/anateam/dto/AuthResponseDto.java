@@ -1,5 +1,6 @@
 package com.anateam.dto;
 
 public record AuthResponseDto(
-    String token
+    String accessToken,
+    String refreshToken
 ) {}

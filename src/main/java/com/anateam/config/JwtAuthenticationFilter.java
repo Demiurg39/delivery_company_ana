@@ -26,36 +26,54 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailServiceImpl userDetailsService;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain)
-        throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorizathion");
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userPhoneNumber;
+
+        // ЛОГ 1: Проверяем, пришел ли заголовок
+        System.out.println(">>> JWT FILTER: Header = " + authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println(">>> JWT FILTER: No Bearer header found, passing to next filter");
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwt = authHeader.substring(7); // 7 - это длина "Bearer "
+        try {
+            jwt = authHeader.substring(7);
+            // ЛОГ 2: Токен выделен
+            System.out.println(">>> JWT FILTER: Token extracted: " + jwt.substring(0, 10) + "...");
 
-        final String username = jwtService.extractUsername(jwt);
+            userPhoneNumber = jwtService.extractUsername(jwt);
+            // ЛОГ 3: Юзернейм извлечен
+            System.out.println(">>> JWT FILTER: Username extracted: " + userPhoneNumber);
 
-        if (username != null &&
-            SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails =
-                this.userDetailsService.loadUserByUsername(username);
-
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-
-                authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (userPhoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userPhoneNumber);
+                
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    System.out.println(">>> JWT FILTER: Success! SecurityContext set for user: " + userPhoneNumber);
+                } else {
+                    System.out.println(">>> JWT FILTER: Token is invalid!");
+                }
             }
+        } catch (Exception e) {
+            // ЛОГ 4: Ошибка
+            System.out.println(">>> JWT FILTER ERROR: " + e.getMessage());
+            e.printStackTrace(); // Чтобы видеть полную ошибку в консоли
         }
 
         filterChain.doFilter(request, response);
