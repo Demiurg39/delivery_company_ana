@@ -20,14 +20,13 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username)
-        throws UsernameNotFoundException {
+            throws UsernameNotFoundException {
         User user = userRepository.findByPhoneNumber(username).orElseThrow(
-            ()
-                -> new UsernameNotFoundException("User with phone number: \"" +
-                                                 username + "\" not found."));
+                () -> new UsernameNotFoundException("User with phone number: \"" +
+                        username + "\" not found."));
 
         return new org.springframework.security.core.userdetails.User(
-            user.getPhoneNumber(), user.getPasswordHash(),
-            List.of(new SimpleGrantedAuthority(user.getRole().name())));
+                user.getPhoneNumber(), user.getPasswordHash(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
     }
 }
