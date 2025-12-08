@@ -38,6 +38,8 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
   implementation("jakarta.persistence:jakarta.persistence-api")
   implementation("io.jsonwebtoken:jjwt-api:0.12.5")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 
   compileOnly("org.projectlombok:lombok")
 
