@@ -15,8 +15,9 @@ public record UserRegistrationDto(
 
     @Schema(description = "User password", example = "strongPass123!", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank
-    String password
+    String password,
 
-    // @Schema(description = "Role of the user: CUSTOMER or COURIER", example = "CUSTOMER", defaultValue = "CUSTOMER")
-    // String role
+    // TODO: this can lead to security breach, need to do something with it
+    @Schema(description = "Role of the user: CUSTOMER or COURIER", example = "CUSTOMER", defaultValue = "CUSTOMER")
+    String role
 ) {}
