@@ -39,10 +39,9 @@ public class SmsServiceImpl implements SmsService {
             .id(String.valueOf(System.currentTimeMillis())) // Simple ID generation
             .sender(sender)
             .text(text)
+            // TODO: fix this cause its only processed and not sending 
+            .test(test ? "1" : "0")
             .phones(List.of(phoneNumber));
-
-        if (test)
-            builder.test("1");
 
         SmsMessage smsMessage = builder.build();
 
@@ -57,8 +56,8 @@ public class SmsServiceImpl implements SmsService {
 
             SmsResponse responseBody = response.getBody();
             if (responseBody != null) {
-                log.info("SMS sent to {}. Status: {}, State: {}", phoneNumber,
-                         responseBody.getStatus(), responseBody.getState());
+                log.info("SMS sent to {}. Status: {}, State: {}, Code: {}", phoneNumber,
+                         responseBody.getStatus(), responseBody.getState(), code);
             } else {
                 log.warn("SMS sent to {} but response body is null",
                          phoneNumber);
