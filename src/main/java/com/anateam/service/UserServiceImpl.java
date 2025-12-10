@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private UserResponseDto toUserResponseDto(User user) {
         return new UserResponseDto(
             user.getId(), user.getFullName(), user.getPhoneNumber(),
-            user.getRole().toString(), user.getCreatedAt().toString());
+            user.getRole().toString(), user.getIsVerified().toString(), user.getCreatedAt().toString());
     }
 
     @Override

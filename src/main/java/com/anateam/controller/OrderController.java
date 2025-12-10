@@ -143,6 +143,7 @@ public class OrderController {
             user.getFullName(),
             user.getPhoneNumber(),
             user.getRole().name(),
+            user.getIsVerified().toString(),
             user.getCreatedAt().toString());
     }
 }

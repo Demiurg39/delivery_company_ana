@@ -31,9 +31,11 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserDetailServiceImpl userDetailService;
 
+    private final UserDetailServiceImpl userDetailService;
+    private final SmsService smsService;
     private final JwtService jwtService;
+
     private final AuthenticationManager authenticationManager;
 
 
@@ -119,9 +121,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private UserResponseDto toUserResponseDto(User user) {
-        return new UserResponseDto(user.getId(), user.getFullName(),
-                user.getPhoneNumber(), user.getRole().name(),
-                user.getCreatedAt().toString());
+        return new UserResponseDto(
+            user.getId(), user.getFullName(), user.getPhoneNumber(),
+            user.getRole().toString(), user.getIsVerified().toString(), user.getCreatedAt().toString());
     }
 
     @Override
@@ -136,14 +138,14 @@ public class AuthServiceImpl implements AuthService {
 
         // Set expiry to 5 minutes from now
         user.setVerificationCode(code);
-        user.setVerificationCodeExpiry(java.time.OffsetDateTime.now().plusMinutes(5));
+        user.setVerificationCodeExpiry(OffsetDateTime.now().plusMinutes(5));
 
         userRepository.save(user);
 
         // Send SMS (implementation in SmsService)
         // Note: This will be called but won't actually send unless credentials are
         // configured
-        // smsService.sendVerificationCode(phoneNumber, code);
+        smsService.sendVerificationCode(phoneNumber, code);
     }
 
     @Override

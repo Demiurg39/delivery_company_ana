@@ -15,6 +15,9 @@ public record UserResponseDto(
     @Schema(description = "User Role", example = "CUSTOMER")
     String role,
 
+    @Schema(description = "Account verification status", example = "True")
+    String isVerified,
+
     @Schema(description = "Account Creation Date", example = "2023-10-01T12:00:00")
     String createdAt
 ) {}
