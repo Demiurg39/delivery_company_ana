@@ -12,29 +12,27 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.anateam.service.UserDetailServiceImpl;
 
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
+import tech.ailef.snapadmin.external.SnapAdminProperties;
 
 @Configuration
-@RequiredArgsConstructor
 @EnableWebSecurity
 @EnableMethodSecurity
-public class
-
-
-
-SecurityConfig {
-
+@RequiredArgsConstructor
+public class SecurityConfig {
     private final UserDetailServiceImpl userDetailServiceImpl;
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final SnapAdminProperties properties;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -62,10 +60,7 @@ SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                // 2. РАЗРЕШАЕМ ВНУТРЕННИЕ ЗАПРОСЫ (Ошибки и Форварды)
                 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-
-                // 3. ОБНОВЛЕННЫЙ БЕЛЫЙ СПИСОК (Swagger любит webjars)
                 .requestMatchers(
                     "/",
                     "/api/auth/**",
@@ -75,7 +70,8 @@ SecurityConfig {
                     "/swagger-resources/**", 
                     "/webjars/**"
                 ).permitAll()
-
+                .requestMatchers("/" + properties.getBaseUrl() + "/**") 
+                .authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -96,5 +92,4 @@ SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
 }

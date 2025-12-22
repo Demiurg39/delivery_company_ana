@@ -56,4 +56,8 @@ public class User extends BaseEntity {
 
     @Column(name = "refresh_token_expiry")
     private OffsetDateTime refreshTokenExpiry;
+
+    public Boolean isVerified() {
+        return this.isVerified;
+    }
 }

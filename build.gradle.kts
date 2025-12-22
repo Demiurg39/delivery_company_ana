@@ -41,6 +41,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-api:0.12.5")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+  implementation("tech.ailef:snap-admin:0.2.1")
 
   compileOnly("org.projectlombok:lombok")
 
