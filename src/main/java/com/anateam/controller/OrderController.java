@@ -76,7 +76,7 @@ public class OrderController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COURIER', 'CUSTOMER')")
     @Operation(summary = "Get all orders", description = "Retrieves a paginated list of all orders.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "List of orders retrieved"),
@@ -86,6 +86,8 @@ public class OrderController {
     public ResponseEntity<Page<OrderResponseDto>> getAllOrders(Pageable pageable) {
         return ResponseEntity.ok(orderService.findAll(pageable));
     }
+
+
 
     @PostMapping("/{id}/accept")
     @PreAuthorize("hasRole('COURIER')")
@@ -123,7 +125,7 @@ public class OrderController {
                       @AuthenticationPrincipal UserDetails userDetails) {
         UserResponseDto authenticatedCourier = getDtoFromUserDetails(userDetails);
         OrderResponseDto updatedOrder = orderService.updateOrderStatus(
-            authenticatedCourier.id(),
+            id,
             statusUpdateDto,
             authenticatedCourier
         );

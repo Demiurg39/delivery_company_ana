@@ -31,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto createOrder(OrderCreationDto creationDto, UserResponseDto userDto) {
         User customer = userRepository.findById(userDto.id())
-            .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
 
         Order order = new Order();
 
@@ -53,13 +53,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto acceptOrder(Integer orderId, Integer courierId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-            () -> new RuntimeException("Order not found"));
+                () -> new RuntimeException("Order not found"));
         Courier courier = courierRepository.findById(courierId).orElseThrow(
-            () -> new RuntimeException("The courier was not found"));
+                () -> new RuntimeException("The courier was not found"));
 
         if (order.getStatus() != OrderStatus.NEW) {
             throw new RuntimeException(
-                "The order has already been taken or completed");
+                    "The order has already been taken or completed");
         }
 
         order.setCourier(courier);
@@ -69,15 +69,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto
-    updateOrderStatus(Integer orderId, OrderStatusUpdateDto statusUpdateDto,
-                      UserResponseDto authenticatedCourier) {
+    public OrderResponseDto updateOrderStatus(Integer orderId, OrderStatusUpdateDto statusUpdateDto,
+                                              UserResponseDto authenticatedCourier) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-            () -> new RuntimeException("Order not found"));
+                () -> new RuntimeException("Order not found"));
+
+        //  ДОБАВЛЕНА ПРОВЕРКА НА NULL
+        if (order.getCourier() == null) {
+            throw new RuntimeException("Order has no courier assigned");
+        }
 
         if (!order.getCourier().getId().equals(authenticatedCourier.id())) {
             throw new RuntimeException(
-                "You can't update the status of someone else's order.");
+                    "You can't update the status of someone else's order.");
         }
 
         OrderStatus newStatus = OrderStatus.valueOf(statusUpdateDto.status());
@@ -89,24 +93,30 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderResponseDto findOrderDtoById(Integer orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-            () -> new RuntimeException("Order not found"));
+                () -> new RuntimeException("Order not found"));
         return toOrderResponseDto(order);
     }
 
+    //  ИСПРАВЛЕННЫЙ МЕТОД
     private OrderResponseDto toOrderResponseDto(Order order) {
         return new OrderResponseDto(
-            order.getId(), order.getCustomer().getId(),
-            order.getCourier().getId(), order.getStatus().name(),
-            order.getPickupAddress(), order.getDeliveryAddress(),
-            toGpsCoordinatesDto(order.getPickupCoordinates()),
-            toGpsCoordinatesDto(order.getDeliveryCoordinates()),
-            order.getPrice(), order.getEstimatedMinutes(),
-            order.getCreatedAt().toString());
+                order.getId(),
+                order.getCustomer().getId(),
+                //  ИСПРАВЛЕНИЕ: проверка на null для курьера
+                order.getCourier() != null ? order.getCourier().getId() : null,
+                order.getStatus().name(),
+                order.getPickupAddress(),
+                order.getDeliveryAddress(),
+                toGpsCoordinatesDto(order.getPickupCoordinates()),
+                toGpsCoordinatesDto(order.getDeliveryCoordinates()),
+                order.getPrice(),
+                order.getEstimatedMinutes(),
+                order.getCreatedAt().toString());
     }
 
     private GpsCoordinatesDto toGpsCoordinatesDto(GpsCoordinates coords) {
         return new GpsCoordinatesDto(coords.getLatitude(),
-                                     coords.getLongitude());
+                coords.getLongitude());
     }
 
     private GpsCoordinates toGpsCoordinatesEntity(GpsCoordinatesDto dto) {
