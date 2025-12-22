@@ -9,20 +9,18 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@OpenAPIDefinition(
-    info = @Info(
-        title = "Delivery Service API",
-        version = "1.0",
-        description = "API documentation for the AnaTeam Delivery Application",
-        contact = @Contact(name = "AnaTeam Support", email = "support@anateam.com")
-    )
+@io.swagger.v3.oas.annotations.OpenAPIDefinition(info = @Info(title = "Delivery Service API", version = "1.0", description = "API documentation for the AnaTeam Delivery Application", contact = @Contact(name = "AnaTeam Support", email = "support@anateam.com")))
+@SecurityScheme(name = "bearerAuth", // Это имя мы используем в контроллерах
+        description = "JWT auth description", scheme = "bearer", // Тип схемы
+        type = SecuritySchemeType.HTTP, // HTTP авторизация
+        bearerFormat = "JWT", // Формат токена
+        in = SecuritySchemeIn.HEADER // Передается в заголовке
 )
-@SecurityScheme(
-    name = "bearerAuth",            // Это имя мы используем в контроллерах
-    description = "JWT auth description",
-    scheme = "bearer",              // Тип схемы
-    type = SecuritySchemeType.HTTP, // HTTP авторизация
-    bearerFormat = "JWT",           // Формат токена
-    in = SecuritySchemeIn.HEADER    // Передается в заголовке
-)
-public class OpenAPIConfig {}
+public class OpenAPIConfig {
+    // SpringDoc by default scans all packages.
+    // We restrict it to our package to avoid scanning SnapAdmin or other libs that
+    // might cause errors.
+    static {
+        io.swagger.v3.core.util.PrimitiveType.enablePartialTime();
+    }
+}
