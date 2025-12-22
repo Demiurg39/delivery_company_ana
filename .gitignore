@@ -1,6 +1,7 @@
 HELP.md
 .gradle
 build/
+libs/
 pgdata/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
